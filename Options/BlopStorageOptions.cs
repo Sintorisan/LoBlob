@@ -1,7 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LoBlob.Options;
 
 public class BlobStorageOptions
 {
-    public required string BaseUrl { get; set; }
-    public required string Container { get; set; }
+    public Uri? BaseUrl { get; set; }
+    public string? BasePath { get; set; }
+    [Required]
+    public required string Tenant { get; set; }
 }

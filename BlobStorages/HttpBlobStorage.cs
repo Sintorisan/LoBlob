@@ -1,21 +1,40 @@
 using LoBlob.Interfaces;
 using LoBlob.Models;
+using LoBlob.Options;
+using Microsoft.Extensions.Options;
 
 namespace LoBlob.BlobStorages;
 
-internal class HttpBlobStorage : IBlobStorage
+internal class HttpBlobStorage : IBlobService
 {
+    private readonly BlobStorageOptions _options;
+
+    internal HttpBlobStorage(IOptions<BlobStorageOptions> options)
+    {
+        _options = options.Value;
+    }
+
     public Task DeleteAsync(string blobKey)
     {
         throw new NotImplementedException();
     }
 
-    public Task<BlobResponse> GetUrlAsync(string blobKey)
+    public Task EnsureContainerAsync(string path)
     {
         throw new NotImplementedException();
     }
 
-    public Task<BlobResponse> UploadAsync(Stream stream, string fileName, string fileType)
+    public Task<List<string>> GetContainerNamesAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<BlobInfo> GetUrlAsync(string blobKey)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<BlobInfo> UploadAsync(BlobUploadOptions options, string containerName)
     {
         throw new NotImplementedException();
     }

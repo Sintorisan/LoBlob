@@ -1,8 +1,9 @@
 using LoBlob.BlobStorages;
+using LoBlob.Clients;
 using LoBlob.Interfaces;
 using LoBlob.Options;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
+using Microsoft.Extensions.Options;
 
 namespace LoBlob.Extensions;
 
@@ -10,56 +11,58 @@ public static class BlobStorageCollectionExtension
 {
     public static IServiceCollection AddLocalBlobStorage(this IServiceCollection services, Action<BlobStorageOptions>? options = null)
     {
-        var defaultPath = SetDefaultLocalBlobUrl();
-        services.SetDefaultConfig(defaultPath);
-
         if (options != null)
         {
-            services.PostConfigure<BlobStorageOptions>(options);
+            services.Configure<BlobStorageOptions>(options);
         }
 
-        services.AddSingleton<IBlobStorage, LocalBlobStorage>();
+        services.PostConfigure<BlobStorageOptions>(opt =>
+        {
+            opt.BasePath ??= SetDefaultLocalBlobPath();
+            opt.Tenant ??= AppDomain.CurrentDomain.FriendlyName;
+        });
+
+        services.AddSingleton<IBlobService, LocalBlobStorage>();
+        services.AddSingleton<BlobClient>();
 
         return services;
     }
 
-    public static IServiceCollection AddHttpBlobStorage(this IServiceCollection services, Action<BlobStorageOptions>? options = null)
+    public static IServiceCollection AddHttpBlobStorage(this IServiceCollection services, Action<BlobStorageOptions>? configure = null)
     {
-        var defaultPath = "http://localhost:5001";
-        services.SetDefaultConfig(defaultPath);
-
-        if (options != null)
+        var baseUrl = new Uri("http://localhost:5001");
+        if (configure != null)
         {
-            services.PostConfigure<BlobStorageOptions>(options);
+            services.Configure(configure);
         }
 
-        services.AddScoped<IBlobStorage, HttpBlobStorage>();
+        services.PostConfigure<BlobStorageOptions>(opt =>
+        {
+            opt.BaseUrl ??= baseUrl;
+            opt.Tenant ??= AppDomain.CurrentDomain.FriendlyName;
+        });
+
+        services.AddHttpClient<IBlobService, HttpBlobStorage>((sp, client) =>
+        {
+            var opt = sp.GetRequiredService<IOptions<BlobStorageOptions>>().Value;
+            client.BaseAddress = new Uri(opt.BaseUrl ?? baseUrl, $"{opt.Tenant}/");
+        });
+
+        services.AddSingleton<BlobClient>();
 
         return services;
     }
 
-    private static IServiceCollection SetDefaultConfig(this IServiceCollection services, string baseUrl)
+    private static string SetDefaultLocalBlobPath()
     {
-        return services.Configure<BlobStorageOptions>(options =>
-            {
-                options.BaseUrl = baseUrl;
-                options.Container = "storage";
-            });
-    }
+        var basePath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "LoBlob"
+        );
 
-    private static string SetDefaultLocalBlobUrl()
-    {
-        var projectName = Assembly.GetExecutingAssembly().GetName().Name ?? "unknown";
-        var currentDir = Directory.GetCurrentDirectory();
-        var rootDir = Directory.GetDirectoryRoot(currentDir);
-        var blobPath = Path.Combine(rootDir, "blob-storage", projectName);
+        Directory.CreateDirectory(basePath);
 
-        if (!Directory.Exists(blobPath))
-        {
-            Directory.CreateDirectory(blobPath);
-        }
-
-        return blobPath;
+        return basePath;
     }
 
 }
