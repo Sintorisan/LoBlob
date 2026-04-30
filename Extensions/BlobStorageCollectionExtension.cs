@@ -22,7 +22,7 @@ public static class BlobStorageCollectionExtension
             opt.Tenant ??= AppDomain.CurrentDomain.FriendlyName;
         });
 
-        services.AddSingleton<IBlobService, LocalBlobStorage>();
+        services.AddSingleton<IBlobService, LocalBlobService>();
         services.AddSingleton<BlobClient>();
 
         return services;
@@ -42,7 +42,7 @@ public static class BlobStorageCollectionExtension
             opt.Tenant ??= AppDomain.CurrentDomain.FriendlyName;
         });
 
-        services.AddHttpClient<IBlobService, HttpBlobStorage>((sp, client) =>
+        services.AddHttpClient<IBlobService, HttpBlobService>((sp, client) =>
         {
             var opt = sp.GetRequiredService<IOptions<BlobStorageOptions>>().Value;
             client.BaseAddress = new Uri(opt.BaseUrl ?? baseUrl, $"{opt.Tenant}/");

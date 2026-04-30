@@ -34,7 +34,7 @@ internal class LocalBlobStorage : IBlobService
         throw new NotImplementedException();
     }
 
-    public Task<BlobInfo> UploadAsync(BlobUploadOptions options, string containerName)
+    public Task<BlobInfo> UploadAsync(Stream stream, BlobUploadOptions options, string containerName)
     {
         throw new NotImplementedException();
     }

@@ -5,7 +5,7 @@ namespace LoBlob.Interfaces;
 
 internal interface IBlobService
 {
-    Task<BlobInfo> UploadAsync(BlobUploadOptions options, string containerName);
+    Task<BlobInfo> UploadAsync(Stream stream, BlobUploadOptions options, string containerName);
     Task<BlobInfo> GetUrlAsync(string blobKey);
     Task DeleteAsync(string blobKey);
     Task EnsureContainerAsync(string path);

@@ -5,11 +5,11 @@ using Microsoft.Extensions.Options;
 
 namespace LoBlob.BlobStorages;
 
-internal class HttpBlobStorage : IBlobService
+internal class HttpBlobService : IBlobService
 {
     private readonly BlobStorageOptions _options;
 
-    internal HttpBlobStorage(IOptions<BlobStorageOptions> options)
+    internal HttpBlobService(IOptions<BlobStorageOptions> options)
     {
         _options = options.Value;
     }
@@ -34,7 +34,7 @@ internal class HttpBlobStorage : IBlobService
         throw new NotImplementedException();
     }
 
-    public Task<BlobInfo> UploadAsync(BlobUploadOptions options, string containerName)
+    public Task<BlobInfo> UploadAsync(Stream stream, BlobUploadOptions options, string containerName)
     {
         throw new NotImplementedException();
     }
