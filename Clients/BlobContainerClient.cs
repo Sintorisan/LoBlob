@@ -21,13 +21,32 @@ public class BlobContainerClient
         return this;
     }
 
-    public async Task<BlobInfo> UploadBlobAsync(BlobUploadOptions options)
+    public async Task<BlobUploadResponse> UploadBlobAsync(Stream stream, BlobUploadOptions options)
     {
-        var respons = await _blobService.UploadAsync(options, _containerName);
+        options.ContainerName = _containerName;
+        var respons = await _blobService.UploadAsync(stream, options);
         return respons;
     }
 
-    public async Task<BlobInfo> GetBlobUrlAsync(string blobKey)
+    public async Task<BlobUploadResponse> UploadBlobAsync(string path, BlobUploadOptions options)
+    {
+        await using FileStream stream = new FileStream(
+            path,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read,
+            bufferSize: 81320,
+            useAsync: true
+            );
+
+        options.ContainerName = _containerName;
+        var respons = await _blobService.UploadAsync(stream, options);
+
+        return respons;
+    }
+
+
+    public async Task<BlobUploadResponse> GetBlobUrlAsync(string blobKey)
     {
         var respons = await _blobService.GetUrlAsync(blobKey);
         return respons;

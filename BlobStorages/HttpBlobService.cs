@@ -29,12 +29,12 @@ internal class HttpBlobService : IBlobService
         throw new NotImplementedException();
     }
 
-    public Task<BlobInfo> GetUrlAsync(string blobKey)
+    public Task<BlobUploadResponse> GetUrlAsync(string blobKey)
     {
         throw new NotImplementedException();
     }
 
-    public Task<BlobInfo> UploadAsync(Stream stream, BlobUploadOptions options, string containerName)
+    public Task<BlobUploadResponse> UploadAsync(Stream stream, BlobUploadOptions options)
     {
         throw new NotImplementedException();
     }

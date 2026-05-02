@@ -3,7 +3,7 @@ using LoBlob.Models;
 using LoBlob.Options;
 using Microsoft.Extensions.Options;
 
-namespace LoBlob.Extensions;
+namespace LoBlob.BlobStorages;
 
 internal class LocalBlobStorage : IBlobService
 {
@@ -29,13 +29,49 @@ internal class LocalBlobStorage : IBlobService
         throw new NotImplementedException();
     }
 
-    public Task<BlobInfo> GetUrlAsync(string blobKey)
+    public Task<BlobUploadResponse> GetUrlAsync(string blobKey)
     {
         throw new NotImplementedException();
     }
 
-    public Task<BlobInfo> UploadAsync(Stream stream, BlobUploadOptions options, string containerName)
+    public async Task<BlobUploadResponse> UploadAsync(Stream stream, BlobUploadOptions uploadOpt)
     {
-        throw new NotImplementedException();
+        var dir = GetDirectory(uploadOpt);
+
+        if (!uploadOpt.Overwrite && File.Exists(dir))
+        {
+            return BlobUploadResponse.Failure("Blob with same name exists in container.");
+        }
+
+        await WriteToDestination(stream, dir);
+
+        var blob = new Blob
+        {
+            BlobKey = uploadOpt.FileName + Guid.NewGuid(),
+            Location = dir
+        };
+
+
+        return BlobUploadResponse.Success(new BlobInfo { });
     }
+
+    private string GetDirectory(BlobUploadOptions blobOpt)
+    {
+        var dir = Path.Combine(_options.BasePath!, _options.Tenant, blobOpt.ContainerName, blobOpt.FileName);
+        return dir;
+    }
+
+    private async Task WriteToDestination(Stream source, string destinationPath)
+    {
+        await using var destination = new FileStream(
+                destinationPath,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.None,
+                bufferSize: 81920,
+                useAsync: true);
+
+        await source.CopyToAsync(destination);
+    }
+
 }

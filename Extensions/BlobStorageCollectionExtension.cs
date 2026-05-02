@@ -22,7 +22,7 @@ public static class BlobStorageCollectionExtension
             opt.Tenant ??= AppDomain.CurrentDomain.FriendlyName;
         });
 
-        services.AddSingleton<IBlobService, LocalBlobService>();
+        services.AddSingleton<IBlobService, LocalBlobStorage>();
         services.AddSingleton<BlobClient>();
 
         return services;
