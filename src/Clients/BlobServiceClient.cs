@@ -1,6 +1,6 @@
 namespace LoBlob.Clients;
 
-public class BlobClient
+public class BlobServiceClient
 {
 
 }

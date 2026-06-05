@@ -2,5 +2,4 @@
   <Folder Name="/src/">
     <Project Path="src/LoBlob.csproj" />
   </Folder>
-  <Project Path="tests/tests.csproj" />
 </Solution>
