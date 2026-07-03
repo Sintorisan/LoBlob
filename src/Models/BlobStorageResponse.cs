@@ -1,6 +1,6 @@
 namespace LoBlob.Models;
 
-public class BlobStorageResponse
+public class BlobStorageResponse<T>
 {
 
 }

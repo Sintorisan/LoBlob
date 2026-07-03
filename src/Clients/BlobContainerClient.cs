@@ -1,31 +1,60 @@
 using LoBlob.Interfaces;
+using LoBlob.Models;
 using LoBlob.Services;
 
 namespace LoBlob.Clients;
 
 public class BlobContainerClient
 {
-    private readonly IStorageService _storageService;
-    private readonly IContainerService _containerService;
-    private string _containerName;
+    private readonly ContainerClientService _clientService;
+    private readonly IStorageGateway _gateway;
 
+    public string ContainerName { get; init; }
 
-    internal BlobContainerClient(string containerName, IStorageService storageService)
+    internal BlobContainerClient(IStorageGateway gateway, string containerName)
     {
-        _containerName = containerName;
-        _storageService = storageService;
-        _containerService = new ContainerService(storageService);
+        _gateway = gateway;
+        _clientService = new ContainerClientService(gateway);
+        ContainerName = containerName;
     }
 
-    internal async Task<BlobContainerClient> InitializeContainerAsync()
+    public Task<bool> CreateIfNotExistsAsync()
     {
-        await _containerService.EnsureContainerExistsAsync(_containerName);
-        return this;
+        throw new NotImplementedException();
     }
 
-    public async Task<BlobClient> CreateBlobClientAsync(string blobName)
+    public Task DeleteAsync()
     {
-        var client = new BlobClient(blobName, _storageService);
-        return await client.InitializeBlobClientAsync();
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> ExistsAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<BlobStorageResponse<List<BlobClient>>>> ListBlobClientsAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<BlobStorageResponse<List<string>>>> ListBlobNamesAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<BlobClient> GetBlobClient(string blobName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<BlobStorageResponse<bool>> UploadBlobAsync(string blobName, FileStream stream, bool overwrite = true)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<BlobStorageResponse<bool>> DeleteBlobAsync(string blobName)
+    {
+        throw new NotImplementedException();
     }
 }

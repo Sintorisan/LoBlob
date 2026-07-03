@@ -1,3 +1,5 @@
+using LoBlob.Clients;
+using LoBlob.Gateways;
 using LoBlob.Interfaces;
 using LoBlob.Options;
 using LoBlob.Services;
@@ -12,7 +14,8 @@ public static class BlobStorageCollectionExtension
     {
         services.Configure(options);
 
-        services.AddScoped<IStorageService, LocalStorageService>();
+        services.AddScoped<IStorageGateway, LocalStorageGateway>();
+        services.AddScoped<BlobStorageClient>();
 
         return services;
     }
@@ -21,11 +24,12 @@ public static class BlobStorageCollectionExtension
     {
         services.Configure(configure);
 
-        services.AddHttpClient<IStorageService, HttpStorageService>((sp, client) =>
+        services.AddHttpClient<IStorageGateway, HttpStorageGateway>((sp, client) =>
         {
             var opt = sp.GetRequiredService<IOptions<BlobStorageOptions>>().Value;
             client.BaseAddress = new Uri($"{opt.Location}/{opt.StorageName}");
         });
+        services.AddScoped<BlobStorageClient>();
 
         return services;
     }

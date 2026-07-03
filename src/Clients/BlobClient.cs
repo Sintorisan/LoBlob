@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using LoBlob.Interfaces;
 using LoBlob.Services;
 
@@ -7,19 +5,47 @@ namespace LoBlob.Clients;
 
 public class BlobClient
 {
-    private readonly IBlobService _blobService;
-    private string _blobName;
+    private readonly BlobClientService _clientService;
 
-    internal BlobClient(string blobName, IStorageService storageService)
+    public string ContainerName { get; init; }
+    public string BlobName { get; init; }
+
+    private string location => $"{ContainerName}/{BlobName}";
+
+    internal BlobClient(IStorageGateway gateway, string containerName, string blobName)
     {
-        _blobService = new BlobService(storageService);
-        _blobName = blobName;
+        _clientService = new BlobClientService(gateway);
+        ContainerName = containerName;
+        BlobName = blobName;
     }
 
-
-    internal async Task<BlobClient> InitializeBlobClientAsync()
+    public Task UploadAsync(FileStream stream)
     {
-        var blob = _blobService.GetBlobClientDataAsync(_blobName);
-        return this;
+        throw new NotImplementedException();
     }
+    public Task DownloadAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task ExistsAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task GetPropertiesAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SetMetadataAsync(Dictionary<string, string> metadata)
+    {
+        throw new NotImplementedException();
+    }
+
 }
